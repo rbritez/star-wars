@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface as Cache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class StarWarsController extends AbstractController
 {
@@ -25,21 +26,20 @@ class StarWarsController extends AbstractController
     }
 
     #[Route('api/v1/people', name: 'people', methods: [Request::METHOD_GET])]
-    public function index(Cache $cache): JsonResponse
+    public function index(): JsonResponse
     {
         $page = 1;
         $dataResult = [];
         try {
-
-            $cacheData = $cache->get('people1', function($cacheData) use ($page, $dataResult) {
+            $cache = new FilesystemAdapter();
+            $cacheData = $cache->get('my_cache', function(ItemInterface $cache) use ($page, $dataResult) {
+                $cache->expiresAfter($this->cacheRemember);
                 do {
                     $dataResponse = (object) $this->swapiService->getPeople($page);
                     $page++;
                     $dataResult = array_merge($dataResult, $dataResponse->data->results);
                 } while ($dataResponse->code == Response::HTTP_OK && !is_null($dataResponse->data->next));
-                $returnData = (new PeopleDTO($dataResult))->data;
-                $cacheData->set($returnData)->expiresAfter($this->cacheRemember);
-                return $returnData;
+                return (new PeopleDTO($dataResult))->data;
             });
             return new JsonResponse(['data' => $cacheData, 'code' => Response::HTTP_OK, 'message' => 'success']);
         } catch (Exception $e) {

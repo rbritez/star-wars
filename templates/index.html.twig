@@ -4,25 +4,32 @@
     <title>API Consumption Example</title>
 </head>
 <body>
-    <h1>Personajes de Star Wars</h1>
+    
     <div id="tableContainer">
+        <h1>Personajes de Star Wars</h1>
         <table id="myTable" class="display">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Masa</th>
+                    <th>Name</th>
+                    <th>Birth Year</th>
+                    <th>Gender</th>
+                    <th>Height-Mass</th>
+                    <th>Eye Color</th>
+                    <th>Skin Color</th>
+                    <th>Created</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Cuerpo de la tabla lleno dinámicamente por DataTables -->
-            </tbody>
         </table>
     </div>
 
-    <!-- Incluye las bibliotecas DataTables y jQuery -->
+    <!-- bibliotecas DataTables y jQuery -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css"/>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css"/>
+
+
+
     <script>
         const url_api = {{ configFromSymfony | json_encode | raw }};
         const table = $('#myTable');
@@ -32,11 +39,11 @@
             // Inicializa DataTables con opciones básicas
             table.DataTable({
                 processing: true,
-                serverSide: false,  // Establece en 'true' si implementas paginación en el servidor
+                serverSide: false,
                 ajax: {
                     url: url_api + '/api/v1/people',
                     type: 'GET',
-                    dataSrc: 'data'  // Indica a DataTables dónde encontrar los datos en la respuesta
+                    dataSrc: 'data'
                 },
                 columns: [
                     { 
@@ -46,21 +53,54 @@
                         }
                     },
                     { 
+                        data: 'birth_year',
+                        render: function (data, type, row) {
+                            let returnYear = (data == 'unknown') ? '#' : data;
+                            return returnYear;
+                        }
+                    },
+                    { 
+                        data: 'gender',
+                        render: function (data, type, row) {
+                            return data.toUpperCase();
+                        }
+                    },
+                    { 
                         data: 'mass',
                         render: function (data, type, row) {
-                            let dataReturn = (data == 'unknown')? 'sin datos' : data;
-                            return dataReturn;
+                            console.log(data, row);
+                            let dataMassa = (data == 'unknown') ? '#' : data;
+                            let dataHeight = (row.height == 'unknown') ? '#' : row.height;
+                            return dataHeight+'-'+dataMassa;
                         }
-                    }
-                    // Añade más columnas según tus necesidades
+                    },
+                    { 
+                        data: 'eye_color',
+                        render: function (data, type, row) {
+                            return data;
+                        }
+                    },
+                    { 
+                        data: 'skin_color',
+                        render: function (data, type, row) {
+                            let returnSkin = (data == 'unknown') ? '#' : data;
+                            return returnSkin;
+                        }
+                    },
+                    { 
+                        data: 'created',
+                        render: function (data, type, row) {
+                            return data;
+                        }
+                    },
                 ]
             });
             tableContainer.css({
-                'max-width': '80%',  // Ajusta el valor según tus preferencias
-                'margin': 'auto',  // Centra horizontalmente
-                'display': 'flex',  // Activa flexbox
-                'flexDirection': 'column',  // Asegura que sea una columna
-                'alignItems': 'center'  // Centra verticalmente
+                'max-width': '80%',
+                'margin': 'auto',
+                'display': 'flex',
+                'flexDirection': 'column',
+                'alignItems': 'center'
             });
         });
     </script>
