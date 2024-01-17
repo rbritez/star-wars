@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Consumption Example</title>
+</head>
+<body>
+    <h1>Personajes de Star Wars</h1>
+    <div id="tableContainer">
+        <table id="myTable" class="display">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Masa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Cuerpo de la tabla lleno dinámicamente por DataTables -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Incluye las bibliotecas DataTables y jQuery -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css"/>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.js"></script>
+    <script>
+        const url_api = {{ configFromSymfony | json_encode | raw }};
+        const table = $('#myTable');
+        const tableContainer = $('#tableContainer');
+
+        $(document).ready(function() {
+            // Inicializa DataTables con opciones básicas
+            table.DataTable({
+                processing: true,
+                serverSide: false,  // Establece en 'true' si implementas paginación en el servidor
+                ajax: {
+                    url: url_api + '/api/v1/people',
+                    type: 'GET',
+                    dataSrc: 'data'  // Indica a DataTables dónde encontrar los datos en la respuesta
+                },
+                columns: [
+                    { 
+                        data: 'name',
+                        render: function (data, type, row) {
+                            return data || 'sin datos';
+                        }
+                    },
+                    { 
+                        data: 'mass',
+                        render: function (data, type, row) {
+                            let dataReturn = (data == 'unknown')? 'sin datos' : data;
+                            return dataReturn;
+                        }
+                    }
+                    // Añade más columnas según tus necesidades
+                ]
+            });
+            tableContainer.css({
+                'max-width': '80%',  // Ajusta el valor según tus preferencias
+                'margin': 'auto',  // Centra horizontalmente
+                'display': 'flex',  // Activa flexbox
+                'flexDirection': 'column',  // Asegura que sea una columna
+                'alignItems': 'center'  // Centra verticalmente
+            });
+        });
+    </script>
+</body>
+</html>

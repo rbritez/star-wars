@@ -24,7 +24,7 @@ class StarWarsController extends AbstractController
         $this->cacheRemember = (int) $globalParams->get('app.cache_remember');
     }
 
-    #[Route('/people', name: 'people', methods: [Request::METHOD_GET])]
+    #[Route('api/v1/people', name: 'people', methods: [Request::METHOD_GET])]
     public function index(Cache $cache): JsonResponse
     {
         $page = 1;
