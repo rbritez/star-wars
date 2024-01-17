@@ -10,6 +10,10 @@
 * descargar el proyecto
 * composer install
 * copiar la carpeta .env.example
-* cp .env.example .env
+```
+cp .env.example .env
+```
 * levantar el proyecto con:
+```
   symfony server:start
+```
