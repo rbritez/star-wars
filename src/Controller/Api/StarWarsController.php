@@ -32,7 +32,7 @@ class StarWarsController extends AbstractController
         $dataResult = [];
         try {
             $cache = new FilesystemAdapter();
-            $cacheData = $cache->get('my_cache', function(ItemInterface $cache) use ($page, $dataResult) {
+            $cacheData = $cache->get('people_index', function(ItemInterface $cache) use ($page, $dataResult) {
                 $cache->expiresAfter($this->cacheRemember);
                 do {
                     $dataResponse = (object) $this->swapiService->getPeople($page);
