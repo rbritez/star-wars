@@ -8,8 +8,11 @@
 
 # INSTALACION
 * descargar el proyecto
-* composer install
-* copiar la carpeta .env.example
+* moverse a la raiz del proyecto y ejecutar:
+  ```
+  composer install
+  ```
+* crear el archivo .env mediante .env.example y luego editarla
 ```
 cp .env.example .env
 ```
